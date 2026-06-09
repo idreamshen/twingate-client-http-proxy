@@ -13,6 +13,7 @@ PORT = int(PORT)
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 
 NETWORK_FILE = '/etc/twingate/webui-network'
+PROFILES_DIR = '/var/lib/twingate/profiles'
 
 MIME_MAP = {
     '.html': 'text/html; charset=utf-8',
@@ -71,11 +72,27 @@ def get_resources():
 
 def do_login(network):
     log(f'LOGIN: network={network}')
+    run_cmd(['twingate', 'stop'])
+    clear_profiles()
     write_file(NETWORK_FILE, network)
-    setup_input = f'A\n{network}\nn\nn\nn\ny\n'
+    setup_input = f'A\n{network}\n{network}\nn\nn\ny\ny\n'
     run_cmd(['twingate', 'setup'], input_data=setup_input)
     run_cmd(['twingate', 'start'])
     log('LOGIN: done')
+
+
+def clear_profiles():
+    log(f'CLEAR: {PROFILES_DIR}')
+    try:
+        for name in os.listdir(PROFILES_DIR):
+            path = os.path.join(PROFILES_DIR, name)
+            if os.path.isfile(path) or os.path.islink(path):
+                os.remove(path)
+                log(f'CLEAR: removed {path}')
+    except FileNotFoundError:
+        log(f'CLEAR: {PROFILES_DIR} does not exist')
+    except Exception as e:
+        log(f'CLEAR: failed -> {e}')
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
