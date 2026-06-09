@@ -5,10 +5,8 @@ if [ "$#" -gt 0 ]; then
   exec "$@"
 fi
 
-if [ ! -f /etc/twingate/.setup-done ]; then
-  printf 'A\n%s\nn\nn\nn\nn\n' "${TWINGATE_NETWORK}" | twingate setup
-  touch /etc/twingate/.setup-done
-fi
+/usr/local/bin/twingate-webui.py &
+webui_pid=$!
 
 while true; do
   /usr/sbin/twingated \
@@ -16,7 +14,7 @@ while true; do
     --tun "${TWINGATE_TUN}" &
   child="$!"
 
-  trap 'kill -TERM "$child" 2>/dev/null || true; wait "$child" 2>/dev/null || true; exit 0' TERM INT
+  trap 'kill -TERM "$child" "$webui_pid" 2>/dev/null || true; wait "$child" 2>/dev/null || true; exit 0' TERM INT
 
   wait "$child" || true
   sleep "${TWINGATE_RESTART_DELAY}"
