@@ -59,11 +59,3 @@ curl --proxy http://127.0.0.1:9999 https://example.com
 ```bash
 docker build -t twingate-client-http-proxy .
 ```
-
-### CI (GitHub Actions)
-
-On every push to `main` or a `v*` tag, GitHub Actions automatically builds the image and pushes it to GitHub Container Registry:
-
-```bash
-docker pull ghcr.io/idreamshen/twingate-client-http-proxy:latest
-```
