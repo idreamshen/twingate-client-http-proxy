@@ -1,0 +1,10 @@
+.git/
+.gitignore
+__pycache__/
+*.pyc
+.Dockerfile.*
+.webui.py.*
+*.md~
+*.swp
+/.agent-shell/
+README.md

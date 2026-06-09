@@ -4,10 +4,22 @@ Built on `debian:bookworm-slim`, this image installs the official Twingate Linux
 
 It also includes a built-in **Web UI** (port `8080`) to configure the Twingate network, run login, and view status and resources — no `docker exec` needed.
 
+[![Build and Push Docker Image](https://github.com/idreamshen/twingate-client-http-proxy/actions/workflows/docker-image.yml/badge.svg)](https://github.com/idreamshen/twingate-client-http-proxy/actions/workflows/docker-image.yml)
+
 ## Build
+
+### Locally
 
 ```bash
 docker build -t twingate-client-http-proxy .
+```
+
+### CI (GitHub Actions)
+
+On every push to `main` or a `v*` tag, GitHub Actions automatically builds the image and pushes it to GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/idreamshen/twingate-client-http-proxy:latest
 ```
 
 ## Run
