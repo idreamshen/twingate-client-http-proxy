@@ -1,4 +1,4 @@
-# Twingate Client Docker - Userspace HTTP Proxy
+# twingate-client-http-proxy — Twingate Userspace HTTP Proxy Docker Image
 
 基于 `debian:bookworm-slim`，安装官方 Twingate Linux 客户端，默认以 **userspace HTTP Proxy 模式**运行，不需要 `NET_ADMIN`、`/dev/net/tun` 或 service key。
 
