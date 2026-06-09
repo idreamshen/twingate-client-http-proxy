@@ -1,37 +1,21 @@
-# twingate-client-http-proxy — Twingate Userspace HTTP Proxy Docker Image
+# Twingate Client Http Proxy
 
-Built on `debian:bookworm-slim`, this image installs the official Twingate Linux client and runs it in **userspace HTTP Proxy mode** by default — no `NET_ADMIN`, `/dev/net/tun`, or service key required.
-
-It also includes a built-in **Web UI** (port `8080`) to configure the Twingate network, run login, and view status and resources — no `docker exec` needed.
+Userspace HTTP Proxy Docker image for the official Twingate Linux client — no `NET_ADMIN`, `/dev/net/tun`, or service key required. Includes a built-in Web UI (port `8080`) for configuration and status.
 
 [![Build and Push Docker Image](https://github.com/idreamshen/twingate-client-http-proxy/actions/workflows/docker-image.yml/badge.svg)](https://github.com/idreamshen/twingate-client-http-proxy/actions/workflows/docker-image.yml)
 
-## Build
+## User Guide
 
-### Locally
-
-```bash
-docker build -t twingate-client-http-proxy .
-```
-
-### CI (GitHub Actions)
-
-On every push to `main` or a `v*` tag, GitHub Actions automatically builds the image and pushes it to GitHub Container Registry:
+### Pull & Run
 
 ```bash
 docker pull ghcr.io/idreamshen/twingate-client-http-proxy:latest
-```
 
-## Run
-
-```bash
 docker run -d --name twingate-client-http-proxy \
-  -p 9999:9999 \
-  -p 8080:8080 \
-  twingate-client-http-proxy
+  -p 127.0.0.1:9999:9999 \
+  -p 127.0.0.1:8080:8080 \
+  ghcr.io/idreamshen/twingate-client-http-proxy:latest
 ```
-
-## Usage
 
 ### Web UI (recommended)
 
@@ -60,7 +44,7 @@ docker exec -it twingate-client-http-proxy twingate resources
 docker exec -it twingate-client-http-proxy twingate stop
 ```
 
-## Using the Proxy
+### Using the Proxy
 
 Once the container is running, any client configured to use an HTTP proxy can connect:
 
@@ -68,7 +52,7 @@ Once the container is running, any client configured to use an HTTP proxy can co
 curl --proxy http://127.0.0.1:9999 https://example.com
 ```
 
-## Persisting State (Optional)
+### Persisting State (Optional)
 
 To preserve login state and network configuration across container rebuilds, use a named volume:
 
@@ -77,10 +61,10 @@ docker run -d --name twingate-client-http-proxy \
   -v twingate-state:/etc/twingate \
   -p 127.0.0.1:9999:9999 \
   -p 127.0.0.1:8080:8080 \
-  twingate-client-http-proxy
+  ghcr.io/idreamshen/twingate-client-http-proxy:latest
 ```
 
-## Environment Variables
+### Environment Variables
 
 | Variable | Default | Description |
 |---|---|---|
@@ -88,3 +72,19 @@ docker run -d --name twingate-client-http-proxy \
 | `TWINGATE_TUN` | `off` | TUN mode toggle (`on`/`off`) |
 | `TWINGATE_RESTART_DELAY` | `5` | Seconds to wait before restarting the daemon |
 | `WEBUI_ADDR` | `0.0.0.0:8080` | Web UI listen address |
+
+## Development Guide
+
+### Build Locally
+
+```bash
+docker build -t twingate-client-http-proxy .
+```
+
+### CI (GitHub Actions)
+
+On every push to `main` or a `v*` tag, GitHub Actions automatically builds the image and pushes it to GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/idreamshen/twingate-client-http-proxy:latest
+```
