@@ -20,8 +20,7 @@ RUN printf '#!/bin/sh\nexit 0\n' > /usr/bin/systemctl && chmod +x /usr/bin/syste
 COPY entrypoint.sh /usr/local/bin/twingate-userspace-entrypoint
 RUN chmod +x /usr/local/bin/twingate-userspace-entrypoint
 
-COPY webui.py /usr/local/bin/twingate-webui.py
-RUN chmod +x /usr/local/bin/twingate-webui.py
+COPY webui /usr/local/share/twingate-webui
 
 EXPOSE 9999 8080
 

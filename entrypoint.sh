@@ -5,7 +5,7 @@ if [ "$#" -gt 0 ]; then
   exec "$@"
 fi
 
-/usr/local/bin/twingate-webui.py &
+/usr/local/share/twingate-webui/server.py &
 webui_pid=$!
 
 while true; do
