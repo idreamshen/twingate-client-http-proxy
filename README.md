@@ -1,47 +1,47 @@
 # twingate-client-http-proxy — Twingate Userspace HTTP Proxy Docker Image
 
-基于 `debian:bookworm-slim`，安装官方 Twingate Linux 客户端，默认以 **userspace HTTP Proxy 模式**运行，不需要 `NET_ADMIN`、`/dev/net/tun` 或 service key。
+Built on `debian:bookworm-slim`, this image installs the official Twingate Linux client and runs it in **userspace HTTP Proxy mode** by default — no `NET_ADMIN`, `/dev/net/tun`, or service key required.
 
-## 构建
+## Build
 
 ```bash
 docker build -t twingate-client .
 ```
 
-## 启动
+## Run
 
 ```bash
 docker run -d --name twingate-client -p 9999:9999 twingate-client
 ```
 
-## 管理
+## Management
 
-所有交互式管理通过 `docker exec` 完成：
+All interactive management is done via `docker exec`:
 
 ```bash
-# 首次启动时自动完成 setup，无需手动操作
+# Setup runs automatically on first start — no manual steps needed
 
-# 登录
+# Login
 docker exec -it twingate-client twingate login
 
-# 查看状态
+# Check status
 docker exec -it twingate-client twingate status
 
-# 登出
+# Logout
 docker exec -it twingate-client twingate logout
 ```
 
-## 使用代理
+## Using the Proxy
 
-容器启动后，任何显式配置了 HTTP proxy 的客户端即可使用：
+Once the container is running, any client configured to use an HTTP proxy can connect:
 
 ```bash
 curl --proxy http://127.0.0.1:9999 https://example.com
 ```
 
-## 保留状态（可选）
+## Persisting State (Optional)
 
-容器删除后重建时，如果希望保留登录状态，使用命名 volume：
+To preserve login state across container rebuilds, use a named volume:
 
 ```bash
 docker run -d --name twingate-client \
@@ -50,11 +50,11 @@ docker run -d --name twingate-client \
   twingate-client
 ```
 
-## 环境变量
+## Environment Variables
 
-| 变量 | 默认值 | 说明 |
+| Variable | Default | Description |
 |---|---|---|
-| `TWINGATE_HTTP_PROXY` | `0.0.0.0:9999` | HTTP proxy 监听地址 |
-| `TWINGATE_TUN` | `off` | TUN 模式开关（`on`/`off`） |
-| `TWINGATE_RESTART_DELAY` | `5` | daemon 重启前等待秒数 |
-| `TWINGATE_NETWORK` | `feedme` | Twingate 网络名称（如 `acme` 对应 `acme.twingate.com`） |
+| `TWINGATE_HTTP_PROXY` | `0.0.0.0:9999` | HTTP proxy listen address |
+| `TWINGATE_TUN` | `off` | TUN mode toggle (`on`/`off`) |
+| `TWINGATE_RESTART_DELAY` | `5` | Seconds to wait before restarting the daemon |
+| `TWINGATE_NETWORK` | `feedme` | Twingate network name (e.g. `acme` for `acme.twingate.com`) |
