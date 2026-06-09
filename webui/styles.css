@@ -15,3 +15,6 @@ legend { font-weight: 700; padding: 0 0.5rem; }
 small { display: block; margin-top: 0.25rem; color: #666; }
 .card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; }
 .card h2 { margin: 0 0 0.5rem 0; font-size: 1.1rem; }
+.message { margin-top: 0.5rem; font-size: 0.85rem; min-height: 1.2em; }
+.message.info { color: #0066cc; }
+.message.error { color: #cc0000; }

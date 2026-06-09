@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+import datetime
 import http.server
 import json
 import os
 import subprocess
+import sys
 
 WEBUI_ADDR = os.environ.get('WEBUI_ADDR', '0.0.0.0:8080')
 HOST, PORT = WEBUI_ADDR.rsplit(':', 1)
@@ -33,13 +35,28 @@ def write_file(path, content):
         f.write(content)
 
 
+def log(msg):
+    ts = datetime.datetime.now().isoformat(timespec='seconds')
+    print(f'[{ts}] {msg}', flush=True)
+
 def run_cmd(cmd, input_data=None):
+    label = ' '.join(cmd)
+    log(f'RUN: {label}')
+    if input_data:
+        log(f'INPUT: {repr(input_data)}')
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, input=input_data, timeout=120)
-        return r.stdout + r.stderr, r.returncode
+        out = r.stdout + r.stderr
+        log(f'EXIT: {label} -> rc={r.returncode}')
+        if out:
+            for line in out.rstrip().splitlines():
+                log(f'  {label}: {line}')
+        return out, r.returncode
     except subprocess.TimeoutExpired:
+        log(f'TIMEOUT: {label}')
         return 'Command timed out', 1
     except Exception as e:
+        log(f'ERROR: {label} -> {e}')
         return str(e), 1
 
 
@@ -54,12 +71,14 @@ def get_resources():
 
 
 def do_login(network):
+    log(f'LOGIN: network={network}')
     if os.path.exists(SETUP_DONE_FILE):
         os.remove(SETUP_DONE_FILE)
     write_file(NETWORK_FILE, network)
-    setup_input = f'A\n{network}\nn\n\nn\nn\nn\n'
+    setup_input = f'A\n{network}\nn\nn\nn\ny\n'
     run_cmd(['twingate', 'setup'], input_data=setup_input)
     run_cmd(['twingate', 'start'])
+    log('LOGIN: done')
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
@@ -123,9 +142,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def log_message(self, fmt, *args):
-        pass
+        log(f'HTTP: {self.client_address[0]} - {fmt % args}')
 
 
 if __name__ == '__main__':
+    log(f'Server starting on {HOST}:{PORT}')
     server = http.server.HTTPServer((HOST, PORT), Handler)
+    log('Server ready')
     server.serve_forever()

@@ -1,4 +1,5 @@
 const prevContent = {};
+let pollInterval = null;
 
 function renderTextWithLinks(el, text) {
   if (prevContent[el.id] === text) return;
@@ -44,10 +45,17 @@ async function fetchResources() {
   }
 }
 
+function startPolling(ms) {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(() => {
+    fetchStatus();
+    fetchResources();
+  }, ms);
+}
+
 fetchStatus();
-setInterval(fetchStatus, 2000);
 fetchResources();
-setInterval(fetchResources, 2000);
+startPolling(2000);
 
 fetch('/config').then(r => r.json()).then(data => {
   document.getElementById('network').value = data.network || '';
@@ -56,16 +64,38 @@ fetch('/config').then(r => r.json()).then(data => {
 document.getElementById('login-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   const btn = document.getElementById('login-btn');
+  const msg = document.getElementById('login-message');
   const network = document.getElementById('network').value;
+
   btn.disabled = true;
   btn.textContent = 'Logging in...';
+  msg.textContent = '';
+  msg.className = 'message';
+
+  let ok = false;
   try {
-    await fetch('/login', {
+    const r = await fetch('/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ network })
     });
+    const data = await r.json();
+    ok = data.ok;
   } catch {}
+
+  if (ok) {
+    msg.textContent = 'Login submitted. Status will update automatically...';
+    msg.className = 'message info';
+    setTimeout(() => { msg.textContent = ''; msg.className = 'message'; }, 5000);
+    fetchStatus();
+    fetchResources();
+    startPolling(1000);
+    setTimeout(() => startPolling(2000), 10000);
+  } else {
+    msg.textContent = 'Login request failed. Please try again.';
+    msg.className = 'message error';
+  }
+
   btn.disabled = false;
   btn.textContent = 'Login';
 });
