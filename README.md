@@ -52,27 +52,6 @@ Once the container is running, any client configured to use an HTTP proxy can co
 curl --proxy http://127.0.0.1:9999 https://example.com
 ```
 
-### Persisting State (Optional)
-
-To preserve login state and network configuration across container rebuilds, use a named volume:
-
-```bash
-docker run -d --name twingate-client-http-proxy \
-  -v twingate-state:/etc/twingate \
-  -p 127.0.0.1:9999:9999 \
-  -p 127.0.0.1:8080:8080 \
-  ghcr.io/idreamshen/twingate-client-http-proxy:latest
-```
-
-### Environment Variables
-
-| Variable | Default | Description |
-|---|---|---|
-| `TWINGATE_HTTP_PROXY` | `0.0.0.0:9999` | HTTP proxy listen address |
-| `TWINGATE_TUN` | `off` | TUN mode toggle (`on`/`off`) |
-| `TWINGATE_RESTART_DELAY` | `5` | Seconds to wait before restarting the daemon |
-| `WEBUI_ADDR` | `0.0.0.0:8080` | Web UI listen address |
-
 ## Development Guide
 
 ### Build Locally
