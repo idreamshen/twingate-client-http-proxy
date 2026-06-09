@@ -41,6 +41,11 @@ def get_status():
     return out, rc
 
 
+def get_resources():
+    out, rc = run_cmd(['twingate', 'resources'])
+    return out, rc
+
+
 def do_login(network):
     if os.path.exists(SETUP_DONE_FILE):
         os.remove(SETUP_DONE_FILE)
@@ -93,6 +98,11 @@ small { display: block; margin-top: 0.25rem; color: #666; }
 <pre id="status">Loading...</pre>
 </div>
 
+<div class="card">
+<h2>Resources</h2>
+<pre id="resources">Loading...</pre>
+</div>
+
 <script>
 const savedNetwork = 'SAVED_NETWORK';
 
@@ -106,8 +116,20 @@ async function fetchStatus() {
   }
 }
 
+async function fetchResources() {
+  try {
+    const r = await fetch('/resources');
+    const data = await r.json();
+    document.getElementById('resources').textContent = data.resources || 'Unable to get resources';
+  } catch {
+    document.getElementById('resources').textContent = 'Failed to fetch resources';
+  }
+}
+
 fetchStatus();
 setInterval(fetchStatus, 2000);
+fetchResources();
+setInterval(fetchResources, 2000);
 
 document.getElementById('login-form').addEventListener('submit', async function(e) {
   e.preventDefault();
@@ -137,6 +159,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
             s, rc = get_status()
             ok = rc == 0
             self._json({'ok': ok, 'status': s})
+            return
+        if self.path == '/resources':
+            s, rc = get_resources()
+            ok = rc == 0
+            self._json({'ok': ok, 'resources': s})
             return
         self._serve_page()
 

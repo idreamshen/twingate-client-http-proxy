@@ -2,7 +2,7 @@
 
 Built on `debian:bookworm-slim`, this image installs the official Twingate Linux client and runs it in **userspace HTTP Proxy mode** by default — no `NET_ADMIN`, `/dev/net/tun`, or service key required.
 
-It also includes a built-in **Web UI** (port `8080`) to configure the Twingate network, run login, and view status — no `docker exec` needed.
+It also includes a built-in **Web UI** (port `8080`) to configure the Twingate network, run login, and view status and resources — no `docker exec` needed.
 
 ## Build
 
@@ -27,7 +27,7 @@ Open http://127.0.0.1:8080 in your browser.
 
 1. Enter your **Twingate network name** (e.g. `acme` for `acme.twingate.com`).
 2. Click **Login** — this runs `twingate setup` and `twingate start` automatically.
-3. The **Status** area polls automatically every 2 seconds and refreshes with `twingate status` output (including any authentication URL).
+3. The **Status** and **Resources** areas poll automatically every 2 seconds, showing `twingate status` and `twingate resources` output.
 
 ### CLI (alternative)
 
@@ -40,6 +40,9 @@ docker exec -it twingate-client-http-proxy twingate start
 
 # Check status
 docker exec -it twingate-client-http-proxy twingate status
+
+# List resources
+docker exec -it twingate-client-http-proxy twingate resources
 
 # Stop (logout)
 docker exec -it twingate-client-http-proxy twingate stop
