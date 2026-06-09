@@ -12,7 +12,6 @@ PORT = int(PORT)
 
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 
-SETUP_DONE_FILE = '/etc/twingate/.setup-done'
 NETWORK_FILE = '/etc/twingate/webui-network'
 
 MIME_MAP = {
@@ -72,8 +71,6 @@ def get_resources():
 
 def do_login(network):
     log(f'LOGIN: network={network}')
-    if os.path.exists(SETUP_DONE_FILE):
-        os.remove(SETUP_DONE_FILE)
     write_file(NETWORK_FILE, network)
     setup_input = f'A\n{network}\nn\nn\nn\ny\n'
     run_cmd(['twingate', 'setup'], input_data=setup_input)
