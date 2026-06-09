@@ -21,6 +21,8 @@ docker run -d --name twingate-client-http-proxy \
 
 Open http://127.0.0.1:8080 in your browser.
 
+<img width="326" height="338" alt="image" src="https://github.com/user-attachments/assets/8b4f0d2e-4bb7-414d-89a6-a10edec68d56" />
+
 1. Enter your **Twingate network name** (e.g. `acme` for `acme.twingate.com`).
 2. Click **Login** — this runs `twingate setup` and `twingate start` automatically.
 3. The **Status** and **Resources** areas poll automatically every 2 seconds, showing `twingate status` and `twingate resources` output.
