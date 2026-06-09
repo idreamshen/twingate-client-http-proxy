@@ -66,6 +66,7 @@ HTML = '''<!DOCTYPE html>
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; background: #fafafa; color: #222; }
 h1 { font-size: 1.5rem; }
 pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; border-radius: 6px; font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-break: break-all; }
+pre a { color: #0066cc; text-decoration: underline; }
 pre#status { background: #fff; border: 1px solid #ddd; min-height: 3rem; }
 label { display: block; margin-bottom: 0.25rem; font-weight: 600; }
 input[type=text] { width: 100%; padding: 0.5rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; }
@@ -105,14 +106,39 @@ small { display: block; margin-top: 0.25rem; color: #666; }
 
 <script>
 const savedNetwork = 'SAVED_NETWORK';
+const prevContent = {};
+
+function renderTextWithLinks(el, text) {
+  if (prevContent[el.id] === text) return;
+  prevContent[el.id] = text;
+  el.innerHTML = '';
+  const urlRe = /https?:[/][\\S]+/g;
+  let last = 0;
+  let match;
+  while ((match = urlRe.exec(text)) !== null) {
+    if (match.index > last) {
+      el.appendChild(document.createTextNode(text.slice(last, match.index)));
+    }
+    const a = document.createElement('a');
+    a.href = match[0];
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = match[0];
+    el.appendChild(a);
+    last = urlRe.lastIndex;
+  }
+  if (last < text.length) {
+    el.appendChild(document.createTextNode(text.slice(last)));
+  }
+}
 
 async function fetchStatus() {
   try {
     const r = await fetch('/status');
     const data = await r.json();
-    document.getElementById('status').textContent = data.status || 'Unable to get status';
+    renderTextWithLinks(document.getElementById('status'), data.status || 'Unable to get status');
   } catch {
-    document.getElementById('status').textContent = 'Failed to fetch status';
+    renderTextWithLinks(document.getElementById('status'), 'Failed to fetch status');
   }
 }
 
@@ -120,9 +146,9 @@ async function fetchResources() {
   try {
     const r = await fetch('/resources');
     const data = await r.json();
-    document.getElementById('resources').textContent = data.resources || 'Unable to get resources';
+    renderTextWithLinks(document.getElementById('resources'), data.resources || 'Unable to get resources');
   } catch {
-    document.getElementById('resources').textContent = 'Failed to fetch resources';
+    renderTextWithLinks(document.getElementById('resources'), 'Failed to fetch resources');
   }
 }
 
